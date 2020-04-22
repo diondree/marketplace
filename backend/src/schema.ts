@@ -1,5 +1,7 @@
 import { nexusPrismaPlugin } from 'nexus-prisma';
 import { intArg, makeSchema, objectType, stringArg } from 'nexus';
+import { createContext } from './context';
+import { join } from 'path';
 
 const User = objectType({
   name: 'User',
@@ -104,8 +106,8 @@ export const schema = makeSchema({
   types: [Query, Mutation, Post, User],
   plugins: [nexusPrismaPlugin()],
   outputs: {
-    schema: __dirname + '/../schema.graphql',
-    typegen: __dirname + '/generated/nexus.ts',
+    typegen: join(__dirname, '../generated/nexus-typegen.ts'),
+    schema: join(__dirname, '/schema.graphql'),
   },
   typegenAutoConfig: {
     contextType: 'Context.Context',
@@ -115,7 +117,7 @@ export const schema = makeSchema({
         alias: 'prisma',
       },
       {
-        source: require.resolve('./context'),
+        source: join(__dirname, 'types.ts'),
         alias: 'Context',
       },
     ],

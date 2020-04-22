@@ -22,6 +22,8 @@ services:
     build:
       context: backend/prisma
       dockerfile: Dockerfile
+    environment:
+      MYSQL_URL: ${MYSQL_URL}
     volumes:
       - /app/prisma
   backend:
@@ -35,6 +37,11 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
+      args:
+        - MYSQL_URL=${MYSQL_URL}
+    environment:
+      MYSQL_URL: ${MYSQL_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -46,6 +53,8 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
+    environment:
+      BACKEND_URL: ${BACKEND_URL}
     volumes:
       - ./frontend:/app
       - /app/node_modules
