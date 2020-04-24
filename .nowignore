@@ -1,4 +1,4 @@
 **/node_modules
 .next
 Dockerfile
-READM.md
+README.md

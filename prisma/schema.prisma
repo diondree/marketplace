@@ -1,0 +1,74 @@
+// datasource db {
+// provider = "mysql"
+// url      = env("MYSQL_URL")
+// }
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Seller Related Schemas
+model Seller {
+  id       Int     @default(autoincrement()) @id
+  name     String
+  email    String  @unique
+  password String  @default("")
+  store    Store[]
+}
+
+model Store {
+  id       Int       @default(autoincrement()) @id
+  name     String
+  key      String    @unique
+  seller   Seller    @relation(fields: [sellerId], references: [id])
+  sellerId Int
+  products Product[]
+}
+
+model SellerMembership {
+  id       Int    @default(autoincrement()) @id
+  seller   Seller @relation(fields: [sellerId], references: [id])
+  sellerId Int
+}
+
+// Product Related Schemas
+model Product {
+  id          Int     @default(autoincrement()) @id
+  name        String
+  description String?
+  images      Image[]
+  price       Float
+  store       Store   @relation(fields: [storeId], references: [id])
+  storeId     Int
+  published   Boolean @default(true)
+}
+
+model Image {
+  id        Int     @default(autoincrement()) @id
+  name      String
+  url       String
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+}
+
+model Category {
+  id          Int      @default(autoincrement()) @id
+  title       String
+  description String
+  parent      Category @relation("CategoryToCategory", fields: [parentId], references: [id])
+  parentId    Int
+  imageUrl    String
+}
+
+// User Related Schemas
+model User {
+  id       Int     @default(autoincrement()) @id
+  email    String  @unique
+  username String  @unique
+  name     String?
+  password String  @default("")
+}
