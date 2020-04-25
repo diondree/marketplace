@@ -3,7 +3,7 @@
  * Do not make changes to this file directly
  */
 
-import * as Context from "../types"
+import * as Context from "../context"
 import * as prisma from "@prisma/client"
 
 
@@ -22,6 +22,10 @@ declare global {
 export interface NexusGenInputs {
   ProductWhereUniqueInput: { // input type
     id?: number | null; // Int
+  }
+  StoreWhereUniqueInput: { // input type
+    id?: number | null; // Int
+    key?: string | null; // String
   }
 }
 
@@ -43,6 +47,7 @@ export interface NexusGenRootTypes {
 
 export interface NexusGenAllTypes extends NexusGenRootTypes {
   ProductWhereUniqueInput: NexusGenInputs['ProductWhereUniqueInput'];
+  StoreWhereUniqueInput: NexusGenInputs['StoreWhereUniqueInput'];
 }
 
 export interface NexusGenFieldTypes {
@@ -55,16 +60,21 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     products: NexusGenRootTypes['Product'][]; // [Product!]!
+    searchProducts: NexusGenRootTypes['Product'][]; // [Product!]!
+    stores: NexusGenRootTypes['Store'][]; // [Store!]!
   }
   Seller: { // field return type
     email: string; // String!
     id: number; // Int!
     name: string; // String!
+    store: NexusGenRootTypes['Store'][]; // [Store!]!
   }
   SellerMembership: { // field return type
     id: number; // Int!
+    seller: NexusGenRootTypes['Seller']; // Seller!
   }
   Store: { // field return type
+    active: boolean; // Boolean!
     id: number; // Int!
     key: string; // String!
     name: string; // String!
@@ -74,6 +84,20 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenArgTypes {
+  Query: {
+    searchProducts: { // args
+      searchString?: string | null; // String
+    }
+  }
+  Seller: {
+    store: { // args
+      after?: NexusGenInputs['StoreWhereUniqueInput'] | null; // StoreWhereUniqueInput
+      before?: NexusGenInputs['StoreWhereUniqueInput'] | null; // StoreWhereUniqueInput
+      first?: number | null; // Int
+      last?: number | null; // Int
+      skip?: number | null; // Int
+    }
+  }
   Store: {
     products: { // args
       after?: NexusGenInputs['ProductWhereUniqueInput'] | null; // ProductWhereUniqueInput
@@ -92,7 +116,7 @@ export interface NexusGenInheritedFields {}
 
 export type NexusGenObjectNames = "Product" | "Query" | "Seller" | "SellerMembership" | "Store";
 
-export type NexusGenInputNames = "ProductWhereUniqueInput";
+export type NexusGenInputNames = "ProductWhereUniqueInput" | "StoreWhereUniqueInput";
 
 export type NexusGenEnumNames = never;
 

@@ -1,6 +1,6 @@
-import { graphql } from 'graphql';
+import { ApolloServer } from 'apollo-server-micro';
 import { schema } from './schema';
-// import { createContext } from './types';
+import { createContext } from './context';
 
 // const server = new GraphQLServer({
 //   schema,
@@ -20,9 +20,25 @@ import { schema } from './schema';
 //   () => console.log(`🚀 Server ready`)
 // );
 
-export default async (req, res) => {
-  const query = req.body.query;
-  const variables = req.body.variables;
-  const response = await graphql(schema, query, {}, {}, variables);
-  return res.end(JSON.stringify(response));
+// export default async (req, res) => {
+//   const query = req.body.query;
+//   const variables = req.body.variables;
+//   const response = await graphql(schema, query, {}, {}, variables);
+//   return res.end(JSON.stringify(response));
+// };
+const handler = new ApolloServer({
+  schema,
+  context: createContext,
+  playground: true,
+  introspection: true,
+});
+
+handler.createHandler({ path: '/api' });
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 };
+
+export default handler;

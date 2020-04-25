@@ -16,22 +16,32 @@ input ProductWhereUniqueInput {
 
 type Query {
   products: [Product!]!
+  searchProducts(searchString: String): [Product!]!
+  stores: [Store!]!
 }
 
 type Seller {
   email: String!
   id: Int!
   name: String!
+  store(after: StoreWhereUniqueInput, before: StoreWhereUniqueInput, first: Int, last: Int, skip: Int): [Store!]!
 }
 
 type SellerMembership {
   id: Int!
+  seller: Seller!
 }
 
 type Store {
+  active: Boolean!
   id: Int!
   key: String!
   name: String!
   products(after: ProductWhereUniqueInput, before: ProductWhereUniqueInput, first: Int, last: Int, skip: Int): [Product!]!
   seller: Seller!
+}
+
+input StoreWhereUniqueInput {
+  id: Int
+  key: String
 }

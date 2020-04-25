@@ -1,10 +1,10 @@
 // datasource db {
 // provider = "mysql"
-// url      = env("MYSQL_URL")
+// url = "***"
 // }
 datasource db {
   provider = "postgres"
-  url      = "postgres://market:1marketapp@localhost:5432"
+  url = "***"
 }
 
 generator client {
