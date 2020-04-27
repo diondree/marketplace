@@ -1,6 +1,7 @@
 import { nexusPrismaPlugin } from 'nexus-prisma';
-import { makeSchema, objectType, stringArg } from '@nexus/schema';
+import { makeSchema, objectType, stringArg, floatArg } from '@nexus/schema';
 import { join } from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 // schema.objectType({
 //   name: 'User',
@@ -60,6 +61,7 @@ const Query = objectType({
   name: 'Query',
   definition(t) {
     t.crud.products();
+    // t.crud.users();
 
     t.list.field('products', {
       type: 'Product',
@@ -107,6 +109,37 @@ const Query = objectType({
   },
 });
 
+const Mutation = objectType({
+  name: 'Mutation',
+  definition(t) {
+    t.crud.createOneUser({ alias: 'signupUser' });
+
+    t.field('addProduct', {
+      type: 'Product',
+      args: {
+        name: stringArg({ nullable: false }),
+        description: stringArg(),
+        images: stringArg({ list: true }),
+        price: floatArg(),
+        storeId: stringArg({ nullable: false }),
+      },
+      resolve: (_, { name, description, price, storeId, images }, ctx) => {
+        return ctx.prisma.product.create({
+          data: {
+            id: uuidv4(),
+            name,
+            description,
+            images,
+            price,
+            store: {
+              connect: { id: storeId },
+            },
+          },
+        });
+      },
+    });
+  },
+});
 // const Mutation = objectType({
 //   name: 'Mutation',
 //   definition(t) {
@@ -149,9 +182,9 @@ const Query = objectType({
 //     });
 //   },
 // });
-// console.log(__dirname + 'schema.graphql'));
+
 export const schema = makeSchema({
-  types: [Query, Product, Store, Seller, SellerMembership],
+  types: [Query, Mutation, Product, Store, Seller, SellerMembership],
   plugins: [nexusPrismaPlugin()],
   shouldGenerateArtifacts: false,
   outputs: {
@@ -172,25 +205,3 @@ export const schema = makeSchema({
     ],
   },
 });
-
-// export const schema = makeSchema({
-//   types: [Query, Product, Store, Seller, SellerMembership],
-//   plugins: [nexusPrismaPlugin()],
-//   outputs: {
-//     typegen: join(__dirname, '/generated/nexus-typegen.ts'),
-//     schema: join(__dirname, '/schema.graphql'),
-//   },
-//   typegenAutoConfig: {
-//     contextType: 'Context.Context',
-//     sources: [
-//       {
-//         source: '@prisma/client',
-//         alias: 'prisma',
-//       },
-//       {
-//         source: join(__dirname, 'context.ts'),
-//         alias: 'Context',
-//       },
-//     ],
-//   },
-// });
