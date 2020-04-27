@@ -31,17 +31,21 @@ async function main() {
 
   // Add store
   const storeRes = await prisma.store.create({
-    data: { ...initialStore, seller: { connect: sellerRes } },
+    data: { ...initialStore, seller: { connect: { id: sellerRes.id } } },
   });
 
   // Add products to store
   await Promise.all(
     initialProducts.map((product) =>
       prisma.product.create({
-        data: { ...product, store: { connect: storeRes } },
+        data: { ...product, store: { connect: { id: storeRes.id } } },
       })
     )
   );
 }
 
-main().catch((e) => console.error(e));
+main()
+  .catch((e) => console.error(e))
+  .finally(async () => {
+    await prisma.disconnect();
+  });

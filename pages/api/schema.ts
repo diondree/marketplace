@@ -1,7 +1,6 @@
 import { nexusPrismaPlugin } from 'nexus-prisma';
-import { intArg, makeSchema, objectType, stringArg } from '@nexus/schema';
+import { makeSchema, objectType, stringArg } from '@nexus/schema';
 import { join } from 'path';
-import { createContext } from './context';
 
 // schema.objectType({
 //   name: 'User',
@@ -60,7 +59,7 @@ const Store = objectType({
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    // t.crud.post();
+    t.crud.products();
 
     t.list.field('products', {
       type: 'Product',

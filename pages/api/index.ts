@@ -26,14 +26,15 @@ import { createContext } from './context';
 //   const response = await graphql(schema, query, {}, {}, variables);
 //   return res.end(JSON.stringify(response));
 // };
-const handler = new ApolloServer({
+const apolloServer = new ApolloServer({
   schema,
   context: createContext,
   playground: true,
   introspection: true,
 });
+console.log('heree');
 
-handler.createHandler({ path: '/api' });
+const handler = apolloServer.createHandler({ path: '/api' });
 
 export const config = {
   api: {
