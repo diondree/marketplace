@@ -7,7 +7,19 @@ const initialProducts = [
     id: 'firstprod',
     name: 't-shirt',
     description: 'my shirt',
-    price: 10.0,
+    price: 20.0,
+  },
+  {
+    id: 'secondprod',
+    name: 'Old Brigand Rum',
+    description: 'Bottle of brown rum',
+    price: 15.0,
+  },
+  {
+    id: 'thirdprod',
+    name: 'Coconut Cream',
+    description: 'Coconut cream ideal for mixing pina coladas',
+    price: 5.5,
   },
 ];
 
@@ -22,7 +34,6 @@ const initialStore = {
   id: 'store1',
   name: 'GOT Store',
   key: 'gotstore',
-  // sellerId: 'seller1',
 };
 
 async function main() {

@@ -32,9 +32,8 @@ const apolloServer = new ApolloServer({
   playground: true,
   introspection: true,
 });
-console.log('heree');
 
-const handler = apolloServer.createHandler({ path: '/api' });
+const handler = apolloServer.createHandler({ path: '/api/graphql' });
 
 export const config = {
   api: {
