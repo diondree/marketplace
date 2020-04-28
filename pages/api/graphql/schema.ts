@@ -2,20 +2,8 @@ import { nexusPrismaPlugin } from 'nexus-prisma';
 import { makeSchema, objectType, stringArg, floatArg } from '@nexus/schema';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { signup, login } from './lib';
 
-// schema.objectType({
-//   name: 'User',
-//   definition(t) {
-//     t.int('id', { description: 'Id of the user' })
-//     t.string('fullName', { description: 'Full name of the user' })
-//     t.list.field('posts', {
-//       type: 'Post',
-//       resolve(post, args, ctx) {
-//         return ctx.db.user.getOne(post.id).posts()
-//       },
-//     })
-//   },
-// })
 const Seller = objectType({
   name: 'Seller',
   definition(t) {
@@ -23,6 +11,16 @@ const Seller = objectType({
     t.model.name();
     t.model.email();
     t.model.store();
+    t.model.membership();
+  },
+});
+
+const Membership = objectType({
+  name: 'Membership',
+  definition(t) {
+    t.model.id();
+    t.model.description();
+    t.model.price();
   },
 });
 
@@ -31,6 +29,7 @@ const SellerMembership = objectType({
   definition(t) {
     t.model.id();
     t.model.seller();
+    t.model.active();
   },
 });
 
@@ -57,10 +56,23 @@ const Store = objectType({
   },
 });
 
+const User = objectType({
+  name: 'User',
+  definition(t) {
+    t.model.id();
+    t.model.username();
+    t.model.email();
+    t.model.name();
+    t.model.password();
+  },
+});
+
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    t.crud.products();
+    t.crud.sellers();
+    // t.crud.memberships();
+    // t.crud.products();
     // t.crud.users();
 
     t.list.field('products', {
@@ -112,23 +124,29 @@ const Query = objectType({
 const Mutation = objectType({
   name: 'Mutation',
   definition(t) {
-    t.crud.createOneUser({ alias: 'signupUser' });
+    // t.crud.createOneUser({ alias: 'signupUser' });
 
     t.field('addProduct', {
       type: 'Product',
       args: {
         name: stringArg({ nullable: false }),
         description: stringArg(),
+        featuredImage: stringArg(),
         images: stringArg({ list: true }),
         price: floatArg(),
         storeId: stringArg({ nullable: false }),
       },
-      resolve: (_, { name, description, price, storeId, images }, ctx) => {
+      resolve: (
+        _,
+        { name, description, price, storeId, images, featuredImage },
+        ctx
+      ) => {
         return ctx.prisma.product.create({
           data: {
             id: uuidv4(),
             name,
             description,
+            featuredImage,
             images,
             price,
             store: {
@@ -138,6 +156,57 @@ const Mutation = objectType({
         });
       },
     });
+
+    t.field('createStore', {
+      type: 'Store',
+      args: {
+        name: stringArg({ nullable: false }),
+        key: stringArg(),
+        sellerId: stringArg(),
+        biography: stringArg(),
+      },
+      resolve: (_, { name, key, sellerId, biography }, ctx) => {
+        return ctx.prisma.store.create({
+          data: {
+            id: uuidv4(),
+            name,
+            key,
+            biography,
+            seller: {
+              connect: {
+                id: sellerId,
+              },
+            },
+          },
+        });
+      },
+    });
+
+    t.field('sellerSignup', {
+      type: 'Seller',
+      args: {
+        name: stringArg({ nullable: false }),
+        email: stringArg({ nullable: false }),
+        password: stringArg({ nullable: false }),
+      },
+      resolve: signup,
+    });
+
+    t.field('sellerLogin', {
+      type: 'Seller',
+      args: {
+        email: stringArg({ nullable: false }),
+        password: stringArg({ nullable: false }),
+      },
+      resolve: login,
+    });
+
+    // t.field('registerUser', {
+    //   type: 'User',
+    //   args: {
+
+    //   }
+    // })
   },
 });
 // const Mutation = objectType({
@@ -184,7 +253,16 @@ const Mutation = objectType({
 // });
 
 export const schema = makeSchema({
-  types: [Query, Mutation, Product, Store, Seller, SellerMembership],
+  types: [
+    Query,
+    Mutation,
+    Product,
+    Store,
+    Seller,
+    SellerMembership,
+    Membership,
+    User,
+  ],
   plugins: [nexusPrismaPlugin()],
   shouldGenerateArtifacts: false,
   outputs: {
@@ -199,7 +277,7 @@ export const schema = makeSchema({
         alias: 'prisma',
       },
       {
-        source: join(__dirname, 'context.ts'),
+        source: require.resolve('./context.ts'),
         alias: 'Context',
       },
     ],

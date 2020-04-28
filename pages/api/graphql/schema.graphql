@@ -2,46 +2,57 @@
 ### Do not make changes to this file directly
 
 
+type Mutation {
+  addProduct(description: String, name: String!, price: Float, storeId: String!): Product!
+}
+
 type Product {
   description: String
-  id: Int!
+  id: String!
   name: String!
   price: Float!
   store: Store!
 }
 
 input ProductWhereUniqueInput {
-  id: Int
+  id: String
 }
 
 type Query {
+  getSellerMembership(sellerId: String): [SellerMembership!]!
   products: [Product!]!
   searchProducts(searchString: String): [Product!]!
+  sellers(after: SellerWhereUniqueInput, before: SellerWhereUniqueInput, first: Int, last: Int, skip: Int): [Seller!]!
   stores: [Store!]!
 }
 
 type Seller {
   email: String!
-  id: Int!
+  id: String!
   name: String!
   store(after: StoreWhereUniqueInput, before: StoreWhereUniqueInput, first: Int, last: Int, skip: Int): [Store!]!
 }
 
 type SellerMembership {
-  id: Int!
+  id: String!
   seller: Seller!
+}
+
+input SellerWhereUniqueInput {
+  email: String
+  id: String
 }
 
 type Store {
   active: Boolean!
-  id: Int!
-  key: String!
+  id: String!
+  key: String
   name: String!
   products(after: ProductWhereUniqueInput, before: ProductWhereUniqueInput, first: Int, last: Int, skip: Int): [Product!]!
   seller: Seller!
 }
 
 input StoreWhereUniqueInput {
-  id: Int
+  id: String
   key: String
 }

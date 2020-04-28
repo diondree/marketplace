@@ -1,33 +1,41 @@
-import { rule, shield } from 'graphql-shield';
+import { rule, shield, and, or, not, allow } from 'graphql-shield';
 import { getUserId } from '../utils';
 
 const rules = {
-  isAuthenticatedUser: rule()((parent, args, context) => {
-    const userId = getUserId(context);
-    return Boolean(userId);
+  isSeller: rule()(async (_, args, context) => {
+    const sellerId = getUserId(context);
+    console.log('called');
+    const seller = await context.prisma.sellers.findOne({
+      where: { id: sellerId },
+    });
+    return Boolean(seller.data.id);
   }),
-  isPostOwner: rule()(async (parent, { id }, context) => {
-    const userId = getUserId(context);
-    const author = await context.prisma.post
-      .findOne({
-        where: {
-          id: Number(id),
-        },
-      })
-      .author();
-    return userId === author.id;
-  }),
+
+  // Check to see if seller is owner of store
+
+  // isProductOwner: rule()(async (parent, { id }, context) => {
+  //   const userId = getUserId(context);
+  //   const author = await context.prisma.product
+  //     .findOne({
+  //       where: {
+  //         id,
+  //       },
+  //     })
+  //     .author();
+  //   return userId === author.id;
+  // }),
 };
 
 export const permissions = shield({
   Query: {
-    me: rules.isAuthenticatedUser,
-    filterPosts: rules.isAuthenticatedUser,
-    post: rules.isAuthenticatedUser,
+    // '*': allow,
+    products: allow,
+    stores: allow,
   },
   Mutation: {
-    createDraft: rules.isAuthenticatedUser,
-    deletePost: rules.isPostOwner,
-    publish: rules.isPostOwner,
+    // '*': allow,
+    sellerLogin: allow,
+    sellerSignup: rules.isSeller,
+    addProduct: rules.isSeller,
   },
 });

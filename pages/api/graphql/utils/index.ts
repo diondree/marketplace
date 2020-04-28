@@ -1,10 +1,22 @@
-import { verify } from 'jsonwebtoken';
+import { verify, sign } from 'jsonwebtoken';
 import { Context } from '../context';
 
-export const APP_SECRET = 'appsecret321';
+export const APP_SECRET = process.env.APP_SECRET;
+
+export function generateToken(payload) {
+  return sign(payload, APP_SECRET);
+}
+
+export function setCookie(response, token) {
+  console.log(response);
+  response.cookie('token', `Bearer ${token}`, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24,
+  });
+}
 
 interface Token {
-  userId: string;
+  sellerId: string;
 }
 
 export function getUserId(context: Context) {
@@ -12,6 +24,6 @@ export function getUserId(context: Context) {
   if (Authorization) {
     const token = Authorization.replace('Bearer ', '');
     const verifiedToken = verify(token, APP_SECRET) as Token;
-    return verifiedToken && verifiedToken.userId;
+    return verifiedToken && verifiedToken.sellerId;
   }
 }
