@@ -3,6 +3,7 @@ import { makeSchema, objectType, stringArg, floatArg } from '@nexus/schema';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { signup, login } from './lib';
+import { Mutation } from './mutations';
 
 const Seller = objectType({
   name: 'Seller',
@@ -67,6 +68,14 @@ const User = objectType({
   },
 });
 
+const SellerAuthPayload = objectType({
+  name: 'SellerAuthPayload',
+  definition(t) {
+    t.string('token');
+    t.field('seller', { type: 'Seller' });
+  },
+});
+
 const Query = objectType({
   name: 'Query',
   definition(t) {
@@ -121,137 +130,6 @@ const Query = objectType({
   },
 });
 
-const Mutation = objectType({
-  name: 'Mutation',
-  definition(t) {
-    // t.crud.createOneUser({ alias: 'signupUser' });
-
-    t.field('addProduct', {
-      type: 'Product',
-      args: {
-        name: stringArg({ nullable: false }),
-        description: stringArg(),
-        featuredImage: stringArg(),
-        images: stringArg({ list: true }),
-        price: floatArg(),
-        storeId: stringArg({ nullable: false }),
-      },
-      resolve: (
-        _,
-        { name, description, price, storeId, images, featuredImage },
-        ctx
-      ) => {
-        return ctx.prisma.product.create({
-          data: {
-            id: uuidv4(),
-            name,
-            description,
-            featuredImage,
-            images,
-            price,
-            store: {
-              connect: { id: storeId },
-            },
-          },
-        });
-      },
-    });
-
-    t.field('createStore', {
-      type: 'Store',
-      args: {
-        name: stringArg({ nullable: false }),
-        key: stringArg(),
-        sellerId: stringArg(),
-        biography: stringArg(),
-      },
-      resolve: (_, { name, key, sellerId, biography }, ctx) => {
-        return ctx.prisma.store.create({
-          data: {
-            id: uuidv4(),
-            name,
-            key,
-            biography,
-            seller: {
-              connect: {
-                id: sellerId,
-              },
-            },
-          },
-        });
-      },
-    });
-
-    t.field('sellerSignup', {
-      type: 'Seller',
-      args: {
-        name: stringArg({ nullable: false }),
-        email: stringArg({ nullable: false }),
-        password: stringArg({ nullable: false }),
-      },
-      resolve: signup,
-    });
-
-    t.field('sellerLogin', {
-      type: 'Seller',
-      args: {
-        email: stringArg({ nullable: false }),
-        password: stringArg({ nullable: false }),
-      },
-      resolve: login,
-    });
-
-    // t.field('registerUser', {
-    //   type: 'User',
-    //   args: {
-
-    //   }
-    // })
-  },
-});
-// const Mutation = objectType({
-//   name: 'Mutation',
-//   definition(t) {
-//     t.crud.createOneUser({ alias: 'signupUser' });
-//     t.crud.deleteOnePost();
-
-//     t.field('createDraft', {
-//       type: 'Post',
-//       args: {
-//         title: stringArg({ nullable: false }),
-//         content: stringArg(),
-//         authorEmail: stringArg(),
-//       },
-//       resolve: (_, { title, content, authorEmail }, ctx) => {
-//         return ctx.prisma.post.create({
-//           data: {
-//             title,
-//             content,
-//             published: false,
-//             author: {
-//               connect: { email: authorEmail },
-//             },
-//           },
-//         });
-//       },
-//     });
-
-//     t.field('publish', {
-//       type: 'Post',
-//       nullable: true,
-//       args: {
-//         id: intArg(),
-//       },
-//       resolve: (_, { id }, ctx) => {
-//         return ctx.prisma.post.update({
-//           where: { id: Number(id) },
-//           data: { published: true },
-//         });
-//       },
-//     });
-//   },
-// });
-
 export const schema = makeSchema({
   types: [
     Query,
@@ -262,6 +140,7 @@ export const schema = makeSchema({
     SellerMembership,
     Membership,
     User,
+    SellerAuthPayload,
   ],
   plugins: [nexusPrismaPlugin()],
   shouldGenerateArtifacts: false,

@@ -9,7 +9,7 @@ export function generateToken(payload) {
 
 export function setCookie(response, token) {
   console.log(response);
-  response.cookie('token', `Bearer ${token}`, {
+  response.headers.cookie('token', `Bearer ${token}`, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
   });
@@ -20,7 +20,7 @@ interface Token {
 }
 
 export function getUserId(context: Context) {
-  const Authorization = context.request.get('Authorization');
+  const Authorization = context.request.headers.authorization;
   if (Authorization) {
     const token = Authorization.replace('Bearer ', '');
     const verifiedToken = verify(token, APP_SECRET) as Token;

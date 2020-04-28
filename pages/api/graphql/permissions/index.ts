@@ -1,29 +1,29 @@
 import { rule, shield, and, or, not, allow } from 'graphql-shield';
 import { getUserId } from '../utils';
+import { Context } from '../context';
 
 const rules = {
-  isSeller: rule()(async (_, args, context) => {
+  isSeller: rule()(async (_, args, context: Context) => {
     const sellerId = getUserId(context);
-    console.log('called');
-    const seller = await context.prisma.sellers.findOne({
+    const seller = await context.prisma.seller.findOne({
       where: { id: sellerId },
     });
-    return Boolean(seller.data.id);
+    return Boolean(seller.id);
   }),
 
   // Check to see if seller is owner of store
+  isStoreOwner: rule()(async (_, { storeId }, context: Context) => {
+    const sellerId = getUserId(context);
+    const seller = await context.prisma.store
+      .findOne({
+        where: {
+          id: storeId,
+        },
+      })
+      .seller();
 
-  // isProductOwner: rule()(async (parent, { id }, context) => {
-  //   const userId = getUserId(context);
-  //   const author = await context.prisma.product
-  //     .findOne({
-  //       where: {
-  //         id,
-  //       },
-  //     })
-  //     .author();
-  //   return userId === author.id;
-  // }),
+    return sellerId === seller.id;
+  }),
 };
 
 export const permissions = shield({
@@ -36,6 +36,6 @@ export const permissions = shield({
     // '*': allow,
     sellerLogin: allow,
     sellerSignup: rules.isSeller,
-    addProduct: rules.isSeller,
+    addProduct: and(rules.isSeller, rules.isStoreOwner),
   },
 });
