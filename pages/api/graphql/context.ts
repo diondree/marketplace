@@ -10,5 +10,9 @@ export interface Context {
 }
 
 export function createContext({ req, res }): Context {
-  return { prisma, request: req, response: res };
+  return {
+    prisma,
+    request: req,
+    response: res,
+  };
 }

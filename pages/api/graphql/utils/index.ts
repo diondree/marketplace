@@ -7,14 +7,6 @@ export function generateToken(payload) {
   return sign(payload, APP_SECRET);
 }
 
-export function setCookie(response, token) {
-  console.log(response);
-  response.headers.cookie('token', `Bearer ${token}`, {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24,
-  });
-}
-
 interface Token {
   sellerId: string;
 }

@@ -1,8 +1,6 @@
 import { nexusPrismaPlugin } from 'nexus-prisma';
-import { makeSchema, objectType, stringArg, floatArg } from '@nexus/schema';
+import { makeSchema, objectType, stringArg } from '@nexus/schema';
 import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import { signup, login } from './lib';
 import { Mutation } from './mutations';
 
 const Seller = objectType({
@@ -50,8 +48,11 @@ const Store = objectType({
   definition(t) {
     t.model.id();
     t.model.name();
+    t.model.biography();
     t.model.key();
     t.model.products();
+    t.model.logo();
+    t.model.coverImage();
     t.model.seller();
     t.model.active();
   },
@@ -80,7 +81,6 @@ const Query = objectType({
   name: 'Query',
   definition(t) {
     t.crud.sellers();
-    // t.crud.memberships();
     // t.crud.products();
     // t.crud.users();
 
@@ -143,7 +143,7 @@ export const schema = makeSchema({
     SellerAuthPayload,
   ],
   plugins: [nexusPrismaPlugin()],
-  shouldGenerateArtifacts: false,
+  shouldGenerateArtifacts: !Boolean(process.env.NODE_ENV),
   outputs: {
     schema: join(__dirname, '/schema.graphql'),
     typegen: join(__dirname, '/generated/nexus-typegen.ts'),

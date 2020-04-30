@@ -3,5 +3,4 @@
 # Prisma Migrate lockfile v1
 # Read more about conflict resolution here: TODO
 
-20200425030511-initial
-20200427230517-image-schema-change
+20200429212232-first

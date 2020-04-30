@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -38,7 +39,10 @@ const initialStore = {
 
 async function main() {
   // Add Seller
-  const sellerRes = await prisma.seller.create({ data: initialSeller });
+  const encryptedPassword = await hash(initialSeller.password, 10);
+  const sellerRes = await prisma.seller.create({
+    data: { ...initialSeller, password: encryptedPassword },
+  });
 
   // Add store
   const storeRes = await prisma.store.create({

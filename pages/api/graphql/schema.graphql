@@ -2,8 +2,19 @@
 ### Do not make changes to this file directly
 
 
+type Membership {
+  description: String!
+  id: String!
+  price: Float!
+}
+
 type Mutation {
-  addProduct(description: String, name: String!, price: Float, storeId: String!): Product!
+  addProduct(description: String, featuredImage: String, images: [String!], name: String!, price: Float, storeId: String!): Product!
+  createStore(biography: String, key: String, name: String!, sellerId: String): Store!
+  editProduct(description: String, featuredImage: String, id: String, images: [String!], name: String, price: Float, published: Boolean): Product!
+  editStore(biography: String, id: String, key: String, name: String): Store!
+  sellerLogin(email: String!, password: String!): SellerAuthPayload!
+  sellerSignup(email: String!, name: String!, password: String!): SellerAuthPayload!
 }
 
 type Product {
@@ -19,7 +30,6 @@ input ProductWhereUniqueInput {
 }
 
 type Query {
-  getSellerMembership(sellerId: String): [SellerMembership!]!
   products: [Product!]!
   searchProducts(searchString: String): [Product!]!
   sellers(after: SellerWhereUniqueInput, before: SellerWhereUniqueInput, first: Int, last: Int, skip: Int): [Seller!]!
@@ -29,11 +39,18 @@ type Query {
 type Seller {
   email: String!
   id: String!
+  membership: SellerMembership
   name: String!
   store(after: StoreWhereUniqueInput, before: StoreWhereUniqueInput, first: Int, last: Int, skip: Int): [Store!]!
 }
 
+type SellerAuthPayload {
+  seller: Seller!
+  token: String!
+}
+
 type SellerMembership {
+  active: Boolean!
   id: String!
   seller: Seller!
 }
@@ -45,8 +62,11 @@ input SellerWhereUniqueInput {
 
 type Store {
   active: Boolean!
+  biography: String
+  coverImage: String!
   id: String!
   key: String
+  logo: String!
   name: String!
   products(after: ProductWhereUniqueInput, before: ProductWhereUniqueInput, first: Int, last: Int, skip: Int): [Product!]!
   seller: Seller!
@@ -55,4 +75,12 @@ type Store {
 input StoreWhereUniqueInput {
   id: String
   key: String
+}
+
+type User {
+  email: String!
+  id: String!
+  name: String
+  password: String!
+  username: String!
 }

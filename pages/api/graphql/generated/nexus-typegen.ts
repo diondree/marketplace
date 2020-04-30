@@ -37,12 +37,18 @@ export interface NexusGenEnums {
 }
 
 export interface NexusGenRootTypes {
+  Membership: prisma.Membership;
   Mutation: {};
   Product: prisma.Product;
   Query: {};
   Seller: prisma.Seller;
+  SellerAuthPayload: { // root type
+    seller: NexusGenRootTypes['Seller']; // Seller!
+    token: string; // String!
+  }
   SellerMembership: prisma.SellerMembership;
   Store: prisma.Store;
+  User: prisma.User;
   String: string;
   Int: number;
   Float: number;
@@ -57,8 +63,18 @@ export interface NexusGenAllTypes extends NexusGenRootTypes {
 }
 
 export interface NexusGenFieldTypes {
+  Membership: { // field return type
+    description: string; // String!
+    id: string; // String!
+    price: number; // Float!
+  }
   Mutation: { // field return type
     addProduct: NexusGenRootTypes['Product']; // Product!
+    createStore: NexusGenRootTypes['Store']; // Store!
+    editProduct: NexusGenRootTypes['Product']; // Product!
+    editStore: NexusGenRootTypes['Store']; // Store!
+    sellerLogin: NexusGenRootTypes['SellerAuthPayload']; // SellerAuthPayload!
+    sellerSignup: NexusGenRootTypes['SellerAuthPayload']; // SellerAuthPayload!
   }
   Product: { // field return type
     description: string | null; // String
@@ -68,7 +84,6 @@ export interface NexusGenFieldTypes {
     store: NexusGenRootTypes['Store']; // Store!
   }
   Query: { // field return type
-    getSellerMembership: NexusGenRootTypes['SellerMembership'][]; // [SellerMembership!]!
     products: NexusGenRootTypes['Product'][]; // [Product!]!
     searchProducts: NexusGenRootTypes['Product'][]; // [Product!]!
     sellers: NexusGenRootTypes['Seller'][]; // [Seller!]!
@@ -77,20 +92,36 @@ export interface NexusGenFieldTypes {
   Seller: { // field return type
     email: string; // String!
     id: string; // String!
+    membership: NexusGenRootTypes['SellerMembership'] | null; // SellerMembership
     name: string; // String!
     store: NexusGenRootTypes['Store'][]; // [Store!]!
   }
+  SellerAuthPayload: { // field return type
+    seller: NexusGenRootTypes['Seller']; // Seller!
+    token: string; // String!
+  }
   SellerMembership: { // field return type
+    active: boolean; // Boolean!
     id: string; // String!
     seller: NexusGenRootTypes['Seller']; // Seller!
   }
   Store: { // field return type
     active: boolean; // Boolean!
+    biography: string | null; // String
+    coverImage: string; // String!
     id: string; // String!
     key: string | null; // String
+    logo: string; // String!
     name: string; // String!
     products: NexusGenRootTypes['Product'][]; // [Product!]!
     seller: NexusGenRootTypes['Seller']; // Seller!
+  }
+  User: { // field return type
+    email: string; // String!
+    id: string; // String!
+    name: string | null; // String
+    password: string; // String!
+    username: string; // String!
   }
 }
 
@@ -98,15 +129,44 @@ export interface NexusGenArgTypes {
   Mutation: {
     addProduct: { // args
       description?: string | null; // String
+      featuredImage?: string | null; // String
+      images?: string[] | null; // [String!]
       name: string; // String!
       price?: number | null; // Float
       storeId: string; // String!
     }
-  }
-  Query: {
-    getSellerMembership: { // args
+    createStore: { // args
+      biography?: string | null; // String
+      key?: string | null; // String
+      name: string; // String!
       sellerId?: string | null; // String
     }
+    editProduct: { // args
+      description?: string | null; // String
+      featuredImage?: string | null; // String
+      id?: string | null; // String
+      images?: string[] | null; // [String!]
+      name?: string | null; // String
+      price?: number | null; // Float
+      published?: boolean | null; // Boolean
+    }
+    editStore: { // args
+      biography?: string | null; // String
+      id?: string | null; // String
+      key?: string | null; // String
+      name?: string | null; // String
+    }
+    sellerLogin: { // args
+      email: string; // String!
+      password: string; // String!
+    }
+    sellerSignup: { // args
+      email: string; // String!
+      name: string; // String!
+      password: string; // String!
+    }
+  }
+  Query: {
     searchProducts: { // args
       searchString?: string | null; // String
     }
@@ -143,7 +203,7 @@ export interface NexusGenAbstractResolveReturnTypes {
 
 export interface NexusGenInheritedFields {}
 
-export type NexusGenObjectNames = "Mutation" | "Product" | "Query" | "Seller" | "SellerMembership" | "Store";
+export type NexusGenObjectNames = "Membership" | "Mutation" | "Product" | "Query" | "Seller" | "SellerAuthPayload" | "SellerMembership" | "Store" | "User";
 
 export type NexusGenInputNames = "ProductWhereUniqueInput" | "SellerWhereUniqueInput" | "StoreWhereUniqueInput";
 

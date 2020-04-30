@@ -11,6 +11,12 @@ const rules = {
     return Boolean(seller.id);
   }),
 
+  isUnauthenticated: rule()(async (_, args, context: Context) => {
+    const sellerId = getUserId(context);
+
+    return !Boolean(sellerId);
+  }),
+
   // Check to see if seller is owner of store
   isStoreOwner: rule()(async (_, { storeId }, context: Context) => {
     const sellerId = getUserId(context);
@@ -28,14 +34,16 @@ const rules = {
 
 export const permissions = shield({
   Query: {
-    // '*': allow,
+    searchProducts: allow,
     products: allow,
     stores: allow,
   },
   Mutation: {
-    // '*': allow,
-    sellerLogin: allow,
-    sellerSignup: rules.isSeller,
+    sellerLogin: rules.isUnauthenticated,
+    sellerSignup: rules.isUnauthenticated,
+    createStore: rules.isSeller,
+    editStore: rules.isStoreOwner,
     addProduct: and(rules.isSeller, rules.isStoreOwner),
+    editProduct: and(rules.isSeller, rules.isStoreOwner),
   },
 });

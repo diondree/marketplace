@@ -1,8 +1,9 @@
-import { objectType, stringArg, floatArg } from '@nexus/schema';
+import { objectType, stringArg, floatArg, booleanArg } from '@nexus/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { hash, compare } from 'bcrypt';
 
-import { generateToken } from '../utils';
+import { generateToken, getUserId } from '../utils';
+import { Product } from '@prisma/client';
 
 export const Mutation = objectType({
   name: 'Mutation',
@@ -21,7 +22,14 @@ export const Mutation = objectType({
       },
       resolve: (
         _,
-        { name, description, price, storeId, images, featuredImage },
+        {
+          name,
+          description,
+          price,
+          storeId,
+          images = [],
+          featuredImage,
+        }: Product,
         ctx
       ) => {
         return ctx.prisma.product.create({
@@ -30,11 +38,45 @@ export const Mutation = objectType({
             name,
             description,
             featuredImage,
-            images,
+            images: { set: images },
             price,
             store: {
               connect: { id: storeId },
             },
+          },
+        });
+      },
+    });
+
+    t.field('editProduct', {
+      type: 'Product',
+      args: {
+        id: stringArg(),
+        name: stringArg(),
+        description: stringArg(),
+        price: floatArg(),
+        published: booleanArg(),
+        images: stringArg({ list: true }),
+        featuredImage: stringArg(),
+      },
+      resolve: (
+        _,
+        { id, name, description, price, published, images = [], featuredImage },
+        ctx
+      ) => {
+        return ctx.prisma.product.update({
+          where: {
+            id,
+          },
+          data: {
+            name,
+            description,
+            price,
+            published,
+            images: {
+              set: images,
+            },
+            featuredImage,
           },
         });
       },
@@ -45,10 +87,10 @@ export const Mutation = objectType({
       args: {
         name: stringArg({ nullable: false }),
         key: stringArg(),
-        sellerId: stringArg(),
         biography: stringArg(),
       },
-      resolve: (_, { name, key, sellerId, biography }, ctx) => {
+      resolve: (_, { name, key, biography }, ctx) => {
+        // return new Error('blahh');
         return ctx.prisma.store.create({
           data: {
             id: uuidv4(),
@@ -57,9 +99,31 @@ export const Mutation = objectType({
             biography,
             seller: {
               connect: {
-                id: sellerId,
+                id: getUserId(ctx),
               },
             },
+          },
+        });
+      },
+    });
+
+    t.field('editStore', {
+      type: 'Store',
+      args: {
+        id: stringArg(),
+        name: stringArg(),
+        biography: stringArg(),
+        key: stringArg(),
+      },
+      resolve: (_, { id, name, biography, key }, ctx) => {
+        return ctx.prisma.store.update({
+          where: {
+            id,
+          },
+          data: {
+            name,
+            biography,
+            key,
           },
         });
       },
@@ -101,32 +165,22 @@ export const Mutation = objectType({
         password: stringArg({ nullable: false }),
       },
       resolve: async (_, { email, password }, ctx) => {
-        console.log(email, password);
         const seller = await ctx.prisma.seller.findOne({ where: { email } });
         if (!seller) {
           throw new Error('Could not find a match for email and password');
         }
 
-        // const valid = await compare(password, seller.password);
-        const valid = password === seller.password;
+        const valid = await compare(password, seller.password);
+        // const valid = password === seller.password;
         if (!valid) {
           throw new Error('Could not find a match for email and password');
         }
 
         const token = generateToken({ sellerId: seller.id });
-        // setCookie(ctx.response, token);
-        console.log(token);
 
         return { seller, token };
       },
     });
-
-    // t.field('registerUser', {
-    //   type: 'User',
-    //   args: {
-
-    //   }
-    // })
   },
 });
 

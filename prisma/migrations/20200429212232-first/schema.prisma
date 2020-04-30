@@ -22,14 +22,16 @@ model Seller {
 }
 
 model Store {
-  id        String    @id
-  name      String
-  biography String?
-  key       String?   @unique
-  seller    Seller    @relation(fields: [sellerId], references: [id])
-  sellerId  String
-  products  Product[]
-  active    Boolean   @default(true)
+  id         String    @id
+  name       String
+  biography  String?
+  key        String?   @unique
+  seller     Seller    @relation(fields: [sellerId], references: [id])
+  sellerId   String
+  products   Product[]
+  active     Boolean   @default(true)
+  logo       String    @default("")
+  coverImage String    @default("")
 }
 
 model Membership {
