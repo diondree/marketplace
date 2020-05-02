@@ -10,7 +10,7 @@ type Membership {
 
 type Mutation {
   addProduct(description: String, featuredImage: String, images: [String!], name: String!, price: Float, storeId: String!): Product!
-  createStore(biography: String, key: String, name: String!, sellerId: String): Store!
+  createStore(biography: String, key: String, name: String!): Store!
   editProduct(description: String, featuredImage: String, id: String, images: [String!], name: String, price: Float, published: Boolean): Product!
   editStore(biography: String, id: String, key: String, name: String): Store!
   sellerLogin(email: String!, password: String!): SellerAuthPayload!

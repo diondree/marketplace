@@ -4,7 +4,6 @@
  */
 
 import * as Context from "../context"
-import * as prisma from "@prisma/client"
 
 
 
@@ -37,18 +36,48 @@ export interface NexusGenEnums {
 }
 
 export interface NexusGenRootTypes {
-  Membership: prisma.Membership;
+  Membership: { // root type
+    description: string; // String!
+    id: string; // String!
+    price: number; // Float!
+  }
   Mutation: {};
-  Product: prisma.Product;
+  Product: { // root type
+    description?: string | null; // String
+    id: string; // String!
+    name: string; // String!
+    price: number; // Float!
+  }
   Query: {};
-  Seller: prisma.Seller;
+  Seller: { // root type
+    email: string; // String!
+    id: string; // String!
+    name: string; // String!
+  }
   SellerAuthPayload: { // root type
     seller: NexusGenRootTypes['Seller']; // Seller!
     token: string; // String!
   }
-  SellerMembership: prisma.SellerMembership;
-  Store: prisma.Store;
-  User: prisma.User;
+  SellerMembership: { // root type
+    active: boolean; // Boolean!
+    id: string; // String!
+  }
+  Store: { // root type
+    active: boolean; // Boolean!
+    biography?: string | null; // String
+    coverImage: string; // String!
+    id: string; // String!
+    key?: string | null; // String
+    logo: string; // String!
+    name: string; // String!
+  }
+  User: { // root type
+    email: string; // String!
+    id: string; // String!
+    name?: string | null; // String
+    password: string; // String!
+    username: string; // String!
+  }
   String: string;
   Int: number;
   Float: number;
@@ -139,7 +168,6 @@ export interface NexusGenArgTypes {
       biography?: string | null; // String
       key?: string | null; // String
       name: string; // String!
-      sellerId?: string | null; // String
     }
     editProduct: { // args
       description?: string | null; // String

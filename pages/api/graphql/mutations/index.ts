@@ -1,15 +1,15 @@
 import { objectType, stringArg, floatArg, booleanArg } from '@nexus/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { hash, compare } from 'bcrypt';
+import validator from 'validator';
 
 import { generateToken, getUserId } from '../utils';
 import { Product } from '@prisma/client';
+import { DuplicateEmailError, InvalidEmailError } from '../errors';
 
 export const Mutation = objectType({
   name: 'Mutation',
   definition(t) {
-    // t.crud.createOneUser({ alias: 'signupUser' });
-
     t.field('addProduct', {
       type: 'Product',
       args: {
@@ -51,7 +51,7 @@ export const Mutation = objectType({
     t.field('editProduct', {
       type: 'Product',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
         name: stringArg(),
         description: stringArg(),
         price: floatArg(),
@@ -90,7 +90,6 @@ export const Mutation = objectType({
         biography: stringArg(),
       },
       resolve: (_, { name, key, biography }, ctx) => {
-        // return new Error('blahh');
         return ctx.prisma.store.create({
           data: {
             id: uuidv4(),
@@ -110,7 +109,7 @@ export const Mutation = objectType({
     t.field('editStore', {
       type: 'Store',
       args: {
-        id: stringArg(),
+        id: stringArg({ nullable: false }),
         name: stringArg(),
         biography: stringArg(),
         key: stringArg(),
@@ -137,9 +136,12 @@ export const Mutation = objectType({
         password: stringArg({ nullable: false }),
       },
       resolve: async (_, { email, name, password }, ctx) => {
+        if (!validator.isEmail(email)) {
+          return new InvalidEmailError();
+        }
         const existing = await ctx.prisma.seller.findOne({ where: { email } });
         if (existing) {
-          throw new Error(`User with email "${email}" already exists`);
+          return new DuplicateEmailError();
         }
 
         const encryptedPassword = await hash(password, 10);
