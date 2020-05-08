@@ -1,17 +1,18 @@
 import { Cloudinary as CoreCloudinary, Util } from 'cloudinary-core';
 
-export const url = (publicId, options) => {
+export const url = (publicId: string, options: any) => {
   const scOptions = Util.withSnakeCaseKeys(options);
   const cl = CoreCloudinary.new({});
   return cl.url(publicId, scOptions);
 };
 
-export const openUploadWidget = (options, callback) => {
+export const openUploadWidget = (options: any, callback: Function) => {
   const scOptions = Util.withSnakeCaseKeys(options);
+  //@ts-ignore
   window.cloudinary.openUploadWidget(scOptions, callback);
 };
 
-export async function fetchPhotos(imageTag, setter) {
+export async function fetchPhotos(imageTag: any, setter: Function) {
   const options = {
     cloudName: 'emkaydee',
     format: 'json',
@@ -25,7 +26,9 @@ export async function fetchPhotos(imageTag, setter) {
     .then((res) => res.text())
     .then((text) =>
       text
-        ? setter(JSON.parse(text).resources.map((image) => image.public_id))
+        ? setter(
+            JSON.parse(text).resources.map((image: any) => image.public_id)
+          )
         : []
     )
     .catch((err) => console.log(err));
@@ -48,4 +51,4 @@ export async function fetchPhotos(imageTag, setter) {
 //       console.log(error);
 //     }
 //   })
-}
+// }

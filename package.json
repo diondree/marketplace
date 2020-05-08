@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "npm run lint -- --fix",
     "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
     "generate:prisma": "prisma generate",
     "generate:nexus": "ts-node --transpile-only --project pages/api/graphql/tsconfig.json pages/api/graphql",
@@ -50,14 +52,34 @@
     "@graphql-codegen/typescript-operations": "^1.13.3",
     "@graphql-codegen/typescript-react-apollo": "^1.13.3",
     "@prisma/cli": "^2.0.0-beta.3",
+    "@types/bcrypt": "^3.0.0",
     "@types/graphql": "^14.5.0",
     "@types/node": "^13.13.1",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.6",
     "@types/validator": "^13.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.31.0",
+    "@typescript-eslint/parser": "^2.31.0",
+    "eslint": "^7.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2",
     "postcss-preset-env": "^6.7.0",
+    "prettier": "^2.0.5",
     "tailwindcss": "^1.3.4",
     "ts-node": "^8.9.0",
     "typescript": "^3.8.3"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": "npm run lint:fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }

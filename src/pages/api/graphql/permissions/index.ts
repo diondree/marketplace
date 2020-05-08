@@ -14,7 +14,7 @@ const rules = {
   isUnauthenticated: rule()(async (_, args, context: Context) => {
     const sellerId = getUserId(context);
 
-    return !Boolean(sellerId);
+    return !sellerId;
   }),
 
   // Check to see if seller is owner of store

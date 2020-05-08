@@ -3,66 +3,72 @@
  * Do not make changes to this file directly
  */
 
-import * as Context from "../context"
-
-
+import * as Context from '../context';
 
 declare global {
   interface NexusGenCustomOutputProperties<TypeName extends string> {
-    crud: NexusPrisma<TypeName, 'crud'>
-    model: NexusPrisma<TypeName, 'model'>
+    crud: NexusPrisma<TypeName, 'crud'>;
+    model: NexusPrisma<TypeName, 'model'>;
   }
 }
 
 declare global {
-  interface NexusGen extends NexusGenTypes {}
+  type NexusGen = NexusGenTypes;
 }
 
 export interface NexusGenInputs {
-  ProductWhereUniqueInput: { // input type
+  ProductWhereUniqueInput: {
+    // input type
     id?: string | null; // String
-  }
-  SellerWhereUniqueInput: { // input type
+  };
+  SellerWhereUniqueInput: {
+    // input type
     email?: string | null; // String
     id?: string | null; // String
-  }
-  StoreWhereUniqueInput: { // input type
+  };
+  StoreWhereUniqueInput: {
+    // input type
     id?: string | null; // String
     key?: string | null; // String
-  }
+  };
 }
 
-export interface NexusGenEnums {
-}
+export interface NexusGenEnums {}
 
 export interface NexusGenRootTypes {
-  Membership: { // root type
+  Membership: {
+    // root type
     description: string; // String!
     id: string; // String!
     price: number; // Float!
-  }
+  };
   Mutation: {};
-  Product: { // root type
+  Product: {
+    // root type
     description?: string | null; // String
     id: string; // String!
     name: string; // String!
     price: number; // Float!
-  }
+  };
   Query: {};
-  Seller: { // root type
+  Seller: {
+    // root type
     email: string; // String!
     id: string; // String!
     name: string; // String!
-  }
-  SellerAuthPayload: { // root type
+  };
+  SellerAuthPayload: {
+    // root type
     seller: NexusGenRootTypes['Seller']; // Seller!
     token: string; // String!
-  }
-  SellerMembership: { // root type
+  };
+  SellerMembership: {
+    // root type
     active: boolean; // Boolean!
     id: string; // String!
-  }
-  Store: { // root type
+  };
+  Store: {
+    // root type
     active: boolean; // Boolean!
     biography?: string | null; // String
     coverImage: string; // String!
@@ -70,14 +76,15 @@ export interface NexusGenRootTypes {
     key?: string | null; // String
     logo: string; // String!
     name: string; // String!
-  }
-  User: { // root type
+  };
+  User: {
+    // root type
     email: string; // String!
     id: string; // String!
     name?: string | null; // String
     password: string; // String!
     username: string; // String!
-  }
+  };
   String: string;
   Int: number;
   Float: number;
@@ -92,49 +99,57 @@ export interface NexusGenAllTypes extends NexusGenRootTypes {
 }
 
 export interface NexusGenFieldTypes {
-  Membership: { // field return type
+  Membership: {
+    // field return type
     description: string; // String!
     id: string; // String!
     price: number; // Float!
-  }
-  Mutation: { // field return type
+  };
+  Mutation: {
+    // field return type
     addProduct: NexusGenRootTypes['Product']; // Product!
     createStore: NexusGenRootTypes['Store']; // Store!
     editProduct: NexusGenRootTypes['Product']; // Product!
     editStore: NexusGenRootTypes['Store']; // Store!
     sellerLogin: NexusGenRootTypes['SellerAuthPayload']; // SellerAuthPayload!
     sellerSignup: NexusGenRootTypes['SellerAuthPayload']; // SellerAuthPayload!
-  }
-  Product: { // field return type
+  };
+  Product: {
+    // field return type
     description: string | null; // String
     id: string; // String!
     name: string; // String!
     price: number; // Float!
     store: NexusGenRootTypes['Store']; // Store!
-  }
-  Query: { // field return type
+  };
+  Query: {
+    // field return type
     products: NexusGenRootTypes['Product'][]; // [Product!]!
     searchProducts: NexusGenRootTypes['Product'][]; // [Product!]!
     sellers: NexusGenRootTypes['Seller'][]; // [Seller!]!
     stores: NexusGenRootTypes['Store'][]; // [Store!]!
-  }
-  Seller: { // field return type
+  };
+  Seller: {
+    // field return type
     email: string; // String!
     id: string; // String!
     membership: NexusGenRootTypes['SellerMembership'] | null; // SellerMembership
     name: string; // String!
     store: NexusGenRootTypes['Store'][]; // [Store!]!
-  }
-  SellerAuthPayload: { // field return type
+  };
+  SellerAuthPayload: {
+    // field return type
     seller: NexusGenRootTypes['Seller']; // Seller!
     token: string; // String!
-  }
-  SellerMembership: { // field return type
+  };
+  SellerMembership: {
+    // field return type
     active: boolean; // Boolean!
     id: string; // String!
     seller: NexusGenRootTypes['Seller']; // Seller!
-  }
-  Store: { // field return type
+  };
+  Store: {
+    // field return type
     active: boolean; // Boolean!
     biography: string | null; // String
     coverImage: string; // String!
@@ -144,32 +159,36 @@ export interface NexusGenFieldTypes {
     name: string; // String!
     products: NexusGenRootTypes['Product'][]; // [Product!]!
     seller: NexusGenRootTypes['Seller']; // Seller!
-  }
-  User: { // field return type
+  };
+  User: {
+    // field return type
     email: string; // String!
     id: string; // String!
     name: string | null; // String
     password: string; // String!
     username: string; // String!
-  }
+  };
 }
 
 export interface NexusGenArgTypes {
   Mutation: {
-    addProduct: { // args
+    addProduct: {
+      // args
       description?: string | null; // String
       featuredImage?: string | null; // String
       images?: string[] | null; // [String!]
       name: string; // String!
       price?: number | null; // Float
       storeId: string; // String!
-    }
-    createStore: { // args
+    };
+    createStore: {
+      // args
       biography?: string | null; // String
       key?: string | null; // String
       name: string; // String!
-    }
-    editProduct: { // args
+    };
+    editProduct: {
+      // args
       description?: string | null; // String
       featuredImage?: string | null; // String
       id?: string | null; // String
@@ -177,69 +196,87 @@ export interface NexusGenArgTypes {
       name?: string | null; // String
       price?: number | null; // Float
       published?: boolean | null; // Boolean
-    }
-    editStore: { // args
+    };
+    editStore: {
+      // args
       biography?: string | null; // String
       id?: string | null; // String
       key?: string | null; // String
       name?: string | null; // String
-    }
-    sellerLogin: { // args
+    };
+    sellerLogin: {
+      // args
       email: string; // String!
       password: string; // String!
-    }
-    sellerSignup: { // args
+    };
+    sellerSignup: {
+      // args
       email: string; // String!
       name: string; // String!
       password: string; // String!
-    }
-  }
+    };
+  };
   Query: {
-    searchProducts: { // args
+    searchProducts: {
+      // args
       searchString?: string | null; // String
-    }
-    sellers: { // args
+    };
+    sellers: {
+      // args
       after?: NexusGenInputs['SellerWhereUniqueInput'] | null; // SellerWhereUniqueInput
       before?: NexusGenInputs['SellerWhereUniqueInput'] | null; // SellerWhereUniqueInput
       first?: number | null; // Int
       last?: number | null; // Int
       skip?: number | null; // Int
-    }
-  }
+    };
+  };
   Seller: {
-    store: { // args
+    store: {
+      // args
       after?: NexusGenInputs['StoreWhereUniqueInput'] | null; // StoreWhereUniqueInput
       before?: NexusGenInputs['StoreWhereUniqueInput'] | null; // StoreWhereUniqueInput
       first?: number | null; // Int
       last?: number | null; // Int
       skip?: number | null; // Int
-    }
-  }
+    };
+  };
   Store: {
-    products: { // args
+    products: {
+      // args
       after?: NexusGenInputs['ProductWhereUniqueInput'] | null; // ProductWhereUniqueInput
       before?: NexusGenInputs['ProductWhereUniqueInput'] | null; // ProductWhereUniqueInput
       first?: number | null; // Int
       last?: number | null; // Int
       skip?: number | null; // Int
-    }
-  }
+    };
+  };
 }
 
-export interface NexusGenAbstractResolveReturnTypes {
-}
+export interface NexusGenAbstractResolveReturnTypes {}
 
 export interface NexusGenInheritedFields {}
 
-export type NexusGenObjectNames = "Membership" | "Mutation" | "Product" | "Query" | "Seller" | "SellerAuthPayload" | "SellerMembership" | "Store" | "User";
+export type NexusGenObjectNames =
+  | 'Membership'
+  | 'Mutation'
+  | 'Product'
+  | 'Query'
+  | 'Seller'
+  | 'SellerAuthPayload'
+  | 'SellerMembership'
+  | 'Store'
+  | 'User';
 
-export type NexusGenInputNames = "ProductWhereUniqueInput" | "SellerWhereUniqueInput" | "StoreWhereUniqueInput";
+export type NexusGenInputNames =
+  | 'ProductWhereUniqueInput'
+  | 'SellerWhereUniqueInput'
+  | 'StoreWhereUniqueInput';
 
 export type NexusGenEnumNames = never;
 
 export type NexusGenInterfaceNames = never;
 
-export type NexusGenScalarNames = "Boolean" | "Float" | "ID" | "Int" | "String";
+export type NexusGenScalarNames = 'Boolean' | 'Float' | 'ID' | 'Int' | 'String';
 
 export type NexusGenUnionNames = never;
 
@@ -257,19 +294,28 @@ export interface NexusGenTypes {
   interfaceNames: NexusGenInterfaceNames;
   scalarNames: NexusGenScalarNames;
   unionNames: NexusGenUnionNames;
-  allInputTypes: NexusGenTypes['inputNames'] | NexusGenTypes['enumNames'] | NexusGenTypes['scalarNames'];
-  allOutputTypes: NexusGenTypes['objectNames'] | NexusGenTypes['enumNames'] | NexusGenTypes['unionNames'] | NexusGenTypes['interfaceNames'] | NexusGenTypes['scalarNames'];
-  allNamedTypes: NexusGenTypes['allInputTypes'] | NexusGenTypes['allOutputTypes']
+  allInputTypes:
+    | NexusGenTypes['inputNames']
+    | NexusGenTypes['enumNames']
+    | NexusGenTypes['scalarNames'];
+  allOutputTypes:
+    | NexusGenTypes['objectNames']
+    | NexusGenTypes['enumNames']
+    | NexusGenTypes['unionNames']
+    | NexusGenTypes['interfaceNames']
+    | NexusGenTypes['scalarNames'];
+  allNamedTypes:
+    | NexusGenTypes['allInputTypes']
+    | NexusGenTypes['allOutputTypes'];
   abstractTypes: NexusGenTypes['interfaceNames'] | NexusGenTypes['unionNames'];
   abstractResolveReturn: NexusGenAbstractResolveReturnTypes;
 }
 
-
 declare global {
-  interface NexusGenPluginTypeConfig<TypeName extends string> {
-  }
-  interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
-  }
-  interface NexusGenPluginSchemaConfig {
-  }
+  interface NexusGenPluginTypeConfig<TypeName extends string> {}
+  interface NexusGenPluginFieldConfig<
+    TypeName extends string,
+    FieldName extends string
+  > {}
+  interface NexusGenPluginSchemaConfig {}
 }

@@ -6,8 +6,8 @@ export type UserObj = { loggedIn: boolean; token: string };
 
 export interface Context {
   prisma: PrismaClient;
-  request?: any;
-  response?: any;
+  request?: NextApiRequest;
+  response?: NextApiResponse;
 }
 
 export type contextPayload = {

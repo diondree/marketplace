@@ -143,7 +143,7 @@ export const schema = makeSchema({
     SellerAuthPayload,
   ],
   plugins: [nexusPrismaPlugin()],
-  shouldGenerateArtifacts: !Boolean(process.env.NODE_ENV),
+  shouldGenerateArtifacts: !process.env.NODE_ENV,
   outputs: {
     schema: join(__dirname, '/schema.graphql'),
     typegen: join(__dirname, '/generated/nexus-typegen.ts'),
