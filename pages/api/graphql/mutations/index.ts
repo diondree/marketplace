@@ -3,9 +3,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { hash, compare } from 'bcrypt';
 import validator from 'validator';
 
-import { generateToken, getUserId } from '../utils';
+import { generateToken, getUserId, uploadImage } from '../utils';
 import { Product } from '@prisma/client';
-import { DuplicateEmailError, InvalidEmailError } from '../errors';
+import {
+  DuplicateEmailError,
+  InvalidEmailError,
+  InvalidPasswordError,
+  InvalidCredentialsError,
+} from '../errors';
 
 export const Mutation = objectType({
   name: 'Mutation',
@@ -16,11 +21,11 @@ export const Mutation = objectType({
         name: stringArg({ nullable: false }),
         description: stringArg(),
         featuredImage: stringArg(),
-        images: stringArg({ list: true }),
+        images: stringArg({ list: true, nullable: true }),
         price: floatArg(),
         storeId: stringArg({ nullable: false }),
       },
-      resolve: (
+      resolve: async (
         _,
         {
           name,
@@ -32,17 +37,29 @@ export const Mutation = objectType({
         }: Product,
         ctx
       ) => {
+        console.log(images);
+        const imagePaths = [];
+        if (images) {
+          const uploadQueue = images.map((image) => {
+            return uploadImage(image).then((result) => {
+              imagePaths.push(result.url);
+            });
+          });
+          await Promise.all(uploadQueue);
+        }
+        console.log(imagePaths);
+
         return ctx.prisma.product.create({
           data: {
             id: uuidv4(),
             name,
             description,
             featuredImage,
-            images: { set: images },
             price,
             store: {
               connect: { id: storeId },
             },
+            images: { ...(imagePaths.length > 0 && { set: imagePaths }) },
           },
         });
       },
@@ -144,6 +161,10 @@ export const Mutation = objectType({
           return new DuplicateEmailError();
         }
 
+        if (password.length < 6) {
+          return new InvalidPasswordError();
+        }
+
         const encryptedPassword = await hash(password, 10);
         const seller = await ctx.prisma.seller.create({
           data: {
@@ -169,13 +190,13 @@ export const Mutation = objectType({
       resolve: async (_, { email, password }, ctx) => {
         const seller = await ctx.prisma.seller.findOne({ where: { email } });
         if (!seller) {
-          throw new Error('Could not find a match for email and password');
+          return new InvalidCredentialsError();
         }
 
         const valid = await compare(password, seller.password);
         // const valid = password === seller.password;
         if (!valid) {
-          throw new Error('Could not find a match for email and password');
+          return new InvalidCredentialsError();
         }
 
         const token = generateToken({ sellerId: seller.id });
@@ -185,5 +206,3 @@ export const Mutation = objectType({
     });
   },
 });
-
-// export async function signup

@@ -1,5 +1,7 @@
+import { v2 as cloudinary } from 'cloudinary';
 import { verify, sign } from 'jsonwebtoken';
 import { Context } from '../context';
+import { ImageUploadError, InvalidImageError } from '../errors';
 
 export const APP_SECRET = process.env.APP_SECRET;
 
@@ -18,4 +20,15 @@ export function getUserId(context: Context) {
     const verifiedToken = verify(token, APP_SECRET) as Token;
     return verifiedToken && verifiedToken.sellerId;
   }
+}
+
+export async function uploadImage(imagePath) {
+  //validate image
+  throw new InvalidImageError();
+
+  //upload image
+  return cloudinary.uploader.upload(imagePath, function (error, result) {
+    console.log(result, error);
+    return new ImageUploadError(error);
+  });
 }

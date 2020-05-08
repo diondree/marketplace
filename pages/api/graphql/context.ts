@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const prisma = new PrismaClient();
 export type UserObj = { loggedIn: boolean; token: string };
@@ -9,7 +10,12 @@ export interface Context {
   response?: any;
 }
 
-export function createContext({ req, res }): Context {
+export type contextPayload = {
+  req: NextApiRequest;
+  res: NextApiResponse;
+};
+
+export function createContext({ req, res }: contextPayload): Context {
   return {
     prisma,
     request: req,

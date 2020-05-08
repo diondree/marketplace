@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from 'react';
 import initApollo from './init-apollo';
 import Head from 'next/head';

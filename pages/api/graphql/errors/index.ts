@@ -19,3 +19,12 @@ export const InvalidCredentialsError = createError('InvalidCredentials', {
 export const InvalidTokenError = createError('InvalidToken', {
   message: 'Invalid JWT provided.',
 });
+
+export const ImageUploadError = createError('ImageUpload', {
+  message:
+    'Image failed to upload. Please ensure image(s) is in the correct format and try again!',
+});
+
+export const InvalidImageError = createError('InvalidImage', {
+  message: 'Invalid Image type. You are only allowed to upload valid image(s)',
+});
