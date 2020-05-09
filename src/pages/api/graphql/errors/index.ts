@@ -20,6 +20,10 @@ export const InvalidTokenError = createError('InvalidToken', {
   message: 'Invalid JWT provided.',
 });
 
+export const AddProductError = createError('AddProductError', {
+  message: 'Something went wrong adding your product. Please try again later',
+});
+
 export const ImageUploadError = createError('ImageUpload', {
   message:
     'Image failed to upload. Please ensure image(s) is in the correct format and try again!',

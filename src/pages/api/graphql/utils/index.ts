@@ -23,12 +23,19 @@ export function getUserId(context: Context) {
 }
 
 export async function uploadImage(imagePath) {
-  //validate image
-  throw new InvalidImageError();
+  try {
+    //validate image
 
-  //upload image
-  return cloudinary.uploader.upload(imagePath, function (error, result) {
-    console.log(result, error);
-    return new ImageUploadError(error);
-  });
+    console.log('!<---->!');
+    //upload image
+    const res = await cloudinary.uploader.upload(imagePath);
+
+    console.log('<---->');
+    console.log(res);
+    console.log('<---->');
+    return res;
+  } catch (err) {
+    console.log(err);
+    throw new ImageUploadError();
+  }
 }

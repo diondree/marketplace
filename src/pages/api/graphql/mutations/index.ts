@@ -10,6 +10,8 @@ import {
   InvalidEmailError,
   InvalidPasswordError,
   InvalidCredentialsError,
+  AddProductError,
+  ImageUploadError,
 } from '../errors';
 
 export const Mutation = objectType({
@@ -37,31 +39,42 @@ export const Mutation = objectType({
         }: Product,
         ctx
       ) => {
-        console.log(images);
-        const imagePaths = [];
-        if (images) {
-          const uploadQueue = images.map((image) => {
-            return uploadImage(image).then((result) => {
-              imagePaths.push(result.url);
+        try {
+          console.log(images);
+          const imagePaths = [];
+          if (images) {
+            const uploadQueue = images.map((image) => {
+              return uploadImage(image).then((result) => {
+                imagePaths.push(result.url);
+              });
             });
-          });
-          await Promise.all(uploadQueue);
-        }
-        console.log(imagePaths);
 
-        return ctx.prisma.product.create({
-          data: {
-            id: uuidv4(),
-            name,
-            description,
-            featuredImage,
-            price,
-            store: {
-              connect: { id: storeId },
+            console.log('failed here 2');
+            try {
+              await Promise.all(uploadQueue);
+            } catch (err) {
+              return new ImageUploadError();
+            }
+            console.log('failed here 3');
+          }
+          console.log(imagePaths);
+
+          return ctx.prisma.product.create({
+            data: {
+              id: uuidv4(),
+              name,
+              description,
+              featuredImage,
+              price,
+              store: {
+                connect: { id: storeId },
+              },
+              images: { ...(imagePaths.length > 0 && { set: imagePaths }) },
             },
-            images: { ...(imagePaths.length > 0 && { set: imagePaths }) },
-          },
-        });
+          });
+        } catch (err) {
+          return new AddProductError();
+        }
       },
     });
 
@@ -188,6 +201,7 @@ export const Mutation = objectType({
         password: stringArg({ nullable: false }),
       },
       resolve: async (_, { email, password }, ctx) => {
+        console.log('hehrefer');
         const seller = await ctx.prisma.seller.findOne({ where: { email } });
         if (!seller) {
           return new InvalidCredentialsError();

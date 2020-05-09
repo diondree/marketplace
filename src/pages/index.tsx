@@ -38,14 +38,17 @@ const IndexPage: NextPage = () => {
   const [files, setFiles] = useState([]);
   const [addProduct, { data, error }] = useMutation(ADD_PRODUCT);
 
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = useCallback((acceptedFiles: any) => {
     // Do something with the files
-    setFiles(acceptedFiles);
+    console.log('FILES');
+    console.log(acceptedFiles);
+    const filePaths = acceptedFiles.map((file: any) => file.path);
+    setFiles(filePaths);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: ['image/png', 'image/jpeg'],
     onDrop,
-    accept: ['image/x-png', 'image/jpeg'],
   });
 
   const submit = async () => {

@@ -25,9 +25,12 @@ const LoginPage: NextPage = () => {
     setCredentials({ ...credentials, [name]: value });
   };
 
-  const submit = async () => {
+  const submit = async (event: React.FormEvent) => {
     try {
-      await login({ variables: credentials });
+      event.preventDefault();
+      const { data } = await login({ variables: credentials });
+      console.log(data.sellerLogin.token);
+      localStorage.setItem('token', data.sellerLogin.token);
     } catch (err) {
       console.log(err);
     }
