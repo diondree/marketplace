@@ -1,94 +1,84 @@
-import { useCallback, useState, useEffect } from 'react';
 import { NextPage } from 'next';
-import { useDropzone } from 'react-dropzone';
-import { useMutation } from 'react-apollo';
-import gql from 'graphql-tag';
+import { GetServerSideProps } from 'next';
 
-const ADD_PRODUCT = gql`
-  mutation AddProduct(
-    $name: String!
-    $description: String
-    $price: Float!
-    $storeId: String!
-    $images: [Upload!]
-  ) {
-    addProduct(
-      name: $name
-      description: $description
-      price: $price
-      storeId: $storeId
-      images: $images
-    ) {
+import gql from 'graphql-tag';
+// import { useQuery } from 'react-apollo';
+import { Product } from '@prisma/client';
+
+const GET_PRODUCTS = gql`
+  query {
+    products {
+      id
       name
       description
       price
+      images
     }
   }
 `;
 
-const IndexPage: NextPage = () => {
-  const initialProduct = {
-    name: 'Macbook Pro',
-    description: 'Best laptop',
-    price: 3600,
-    storeId: 'store1',
+declare interface NextPageProps {
+  data: {
+    products: Product[];
   };
+  error: Error;
+}
 
-  const [state, setState] = useState('initial');
-  const [files, setFiles] = useState([]);
-  const [addProduct, { data, error }] = useMutation(ADD_PRODUCT);
-
-  const onDrop = useCallback(async (acceptedFiles: any) => {
-    // Do something with the files
-    console.log('FILES');
-    console.log(acceptedFiles);
-    // const filePaths = acceptedFiles.map((file: any) => file.path);
-    setFiles(acceptedFiles);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: ['image/png', 'image/jpeg'],
-    onDrop,
-  });
-
-  useEffect(
-    () => () => {
-      // Make sure to revoke the data uris to avoid memory leaks
-      //@ts-ignore
-      files.forEach((file) => URL.revokeObjectURL(file.preview));
-    },
-    [files]
-  );
-
-  const submit = async () => {
-    try {
-      setState('loading');
-      console.log(files);
-      await addProduct({ variables: { ...initialProduct, images: files } });
-      setState('initial');
-    } catch (err) {
-      console.log(err);
-      setState('error');
+//@ts-ignore
+const IndexPage: NextPage = ({ data, loading, error }) => {
+  // const { data, loading, error } = useQuery(GET_PRODUCTS);
+  console.log(data);
+  console.log(loading);
+  console.log(error);
+  const renderProducts = () => {
+    if (error) {
+      return <div>Could not fetch Products</div>;
     }
+    if (loading) {
+      return <div>Loading</div>;
+    }
+    console.log(data);
+    return data.products.map((product: Product) => (
+      <div key={product.id}>{product.name}</div>
+    ));
   };
-
   return (
     <div>
-      <h1>File Uploader</h1>
-      <div {...getRootProps()}>
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <p>Drop the files here ...</p>
-        ) : (
-          <p>Drag and drop some files here, or click to select files</p>
-        )}
-      </div>
-      {error && <span>An Error occurrred</span>}
-      <button disabled={state === 'loading'} onClick={submit}>
-        Submit
-      </button>
+      Homepage
+      <div>{renderProducts()}</div>
     </div>
   );
 };
+
+export async function getServerSideProps(context: GetServerSideProps) {
+  console.log(context);
+  //@ts-ignore
+  const { data, loading, error } = context.graphQLClient.query({
+    query: GET_PRODUCTS,
+  });
+  return {
+    props: {
+      data,
+      error,
+      loading,
+    },
+  };
+}
+
+// IndexPage.getInitialProps = async (ctx) => {
+//   try {
+//     console.log(ctx);
+//     //@ts-ignore
+//     const { data, loading, error } = await ctx.apolloClient.query({
+//       query: GET_PRODUCTS,
+//     });
+
+//     return { data, loading, error };
+//   } catch (error) {
+//     return {
+//       error: 'Failed to fetch',
+//     };
+//   }
+// };
 
 export default IndexPage;
