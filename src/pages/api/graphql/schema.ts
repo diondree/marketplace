@@ -1,7 +1,15 @@
+import { GraphQLUpload } from 'apollo-server-micro';
 import { nexusPrismaPlugin } from 'nexus-prisma';
-import { makeSchema, objectType, stringArg } from '@nexus/schema';
+import {
+  makeSchema,
+  objectType,
+  stringArg,
+  asNexusMethod,
+} from '@nexus/schema';
 import { join } from 'path';
 import { Mutation } from './mutations';
+
+const Upload = asNexusMethod(GraphQLUpload, 'Upload');
 
 const Seller = objectType({
   name: 'Seller',
@@ -40,6 +48,8 @@ const Product = objectType({
     t.model.description();
     t.model.price();
     t.model.store();
+    t.model.images();
+    t.model.featuredImage();
   },
 });
 
@@ -74,6 +84,16 @@ const SellerAuthPayload = objectType({
   definition(t) {
     t.string('token');
     t.field('seller', { type: 'Seller' });
+  },
+});
+
+const Image = objectType({
+  name: 'Image',
+  definition(t) {
+    t.string('name');
+    t.string('path');
+    t.int('size');
+    t.string('type');
   },
 });
 
@@ -141,6 +161,8 @@ export const schema = makeSchema({
     Membership,
     User,
     SellerAuthPayload,
+    Image,
+    Upload,
   ],
   plugins: [nexusPrismaPlugin()],
   shouldGenerateArtifacts: !process.env.NODE_ENV,

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from 'react-apollo';
@@ -10,7 +10,7 @@ const ADD_PRODUCT = gql`
     $description: String
     $price: Float!
     $storeId: String!
-    $images: [String!]
+    $images: [Upload!]
   ) {
     addProduct(
       name: $name
@@ -38,12 +38,12 @@ const IndexPage: NextPage = () => {
   const [files, setFiles] = useState([]);
   const [addProduct, { data, error }] = useMutation(ADD_PRODUCT);
 
-  const onDrop = useCallback((acceptedFiles: any) => {
+  const onDrop = useCallback(async (acceptedFiles: any) => {
     // Do something with the files
     console.log('FILES');
     console.log(acceptedFiles);
-    const filePaths = acceptedFiles.map((file: any) => file.path);
-    setFiles(filePaths);
+    // const filePaths = acceptedFiles.map((file: any) => file.path);
+    setFiles(acceptedFiles);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -51,9 +51,19 @@ const IndexPage: NextPage = () => {
     onDrop,
   });
 
+  useEffect(
+    () => () => {
+      // Make sure to revoke the data uris to avoid memory leaks
+      //@ts-ignore
+      files.forEach((file) => URL.revokeObjectURL(file.preview));
+    },
+    [files]
+  );
+
   const submit = async () => {
     try {
       setState('loading');
+      console.log(files);
       await addProduct({ variables: { ...initialProduct, images: files } });
       setState('initial');
     } catch (err) {
@@ -61,6 +71,7 @@ const IndexPage: NextPage = () => {
       setState('error');
     }
   };
+
   return (
     <div>
       <h1>File Uploader</h1>

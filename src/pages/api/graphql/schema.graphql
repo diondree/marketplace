@@ -2,6 +2,13 @@
 ### Do not make changes to this file directly
 
 
+type Image {
+  name: String!
+  path: String!
+  size: Int!
+  type: String!
+}
+
 type Membership {
   description: String!
   id: String!
@@ -9,17 +16,19 @@ type Membership {
 }
 
 type Mutation {
-  addProduct(description: String, featuredImage: String, images: [String!], name: String!, price: Float, storeId: String!): Product!
+  addProduct(description: String, featuredImage: String, images: [Upload!], name: String!, price: Float, storeId: String!): Product!
   createStore(biography: String, key: String, name: String!): Store!
-  editProduct(description: String, featuredImage: String, id: String, images: [String!], name: String, price: Float, published: Boolean): Product!
-  editStore(biography: String, id: String, key: String, name: String): Store!
+  editProduct(description: String, featuredImage: String, id: String!, images: [String!], name: String, price: Float, published: Boolean): Product!
+  editStore(biography: String, id: String!, key: String, name: String): Store!
   sellerLogin(email: String!, password: String!): SellerAuthPayload!
   sellerSignup(email: String!, name: String!, password: String!): SellerAuthPayload!
 }
 
 type Product {
   description: String
+  featuredImage: String
   id: String!
+  images: [String!]!
   name: String!
   price: Float!
   store: Store!
@@ -76,6 +85,9 @@ input StoreWhereUniqueInput {
   id: String
   key: String
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type User {
   email: String!

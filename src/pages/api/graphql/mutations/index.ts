@@ -1,10 +1,16 @@
-import { objectType, stringArg, floatArg, booleanArg } from '@nexus/schema';
+import {
+  objectType,
+  stringArg,
+  floatArg,
+  booleanArg,
+  arg,
+} from '@nexus/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { hash, compare } from 'bcrypt';
 import validator from 'validator';
 
 import { generateToken, getUserId, uploadImage } from '../utils';
-import { Product } from '@prisma/client';
+
 import {
   DuplicateEmailError,
   InvalidEmailError,
@@ -23,20 +29,13 @@ export const Mutation = objectType({
         name: stringArg({ nullable: false }),
         description: stringArg(),
         featuredImage: stringArg(),
-        images: stringArg({ list: true, nullable: true }),
+        images: arg({ type: 'Upload', list: true }),
         price: floatArg(),
         storeId: stringArg({ nullable: false }),
       },
       resolve: async (
         _,
-        {
-          name,
-          description,
-          price,
-          storeId,
-          images = [],
-          featuredImage,
-        }: Product,
+        { name, description, price, storeId, images = [], featuredImage },
         ctx
       ) => {
         try {
@@ -45,7 +44,7 @@ export const Mutation = objectType({
           if (images) {
             const uploadQueue = images.map((image) => {
               return uploadImage(image).then((result) => {
-                imagePaths.push(result.url);
+                imagePaths.push(result);
               });
             });
 

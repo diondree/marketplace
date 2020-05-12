@@ -7,6 +7,8 @@ import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 import { HttpLink } from 'apollo-link-http';
+import { ApolloLink } from 'apollo-link';
+import { createUploadLink } from 'apollo-upload-client';
 import fetch from 'isomorphic-unfetch';
 
 let apolloClient = null;
@@ -24,13 +26,12 @@ const authLink = setContext((_, { headers }) => {
 });
 
 function createIsomorphLink() {
-  const httpLink = new HttpLink({
-    // uri: process.env.BACKEND_URL,
+  const uploadLink = createUploadLink({
     uri: '/api/graphql',
     credentials: 'same-origin',
-    fetch,
   });
-  return authLink.concat(httpLink);
+
+  return ApolloLink.from([authLink, uploadLink]);
 }
 
 /**

@@ -33,6 +33,7 @@ module.exports = {
         depth: 25,
       },
     ],
+    '@typescript-eslint/no-explicit-any': 'off',
   },
   settings: {
     react: {
